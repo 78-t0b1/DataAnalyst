@@ -1,0 +1,11 @@
+10 - Implimenting db
+11 - Implimenting Agent
+12 - Implimenting FAST API and Deployment process with proper testing
+13 - Creating frontend and host it
+14 - Implimenting Major agent which will keep aye on both sust agent and crismax agent. and handels memory buffer. (Experimental)
+15 - tesing full application with diffrent testcases
+16 - add comments and format code for easy understanding
+17 - Well format README.md
+18 - Create PPT of whole journey
+19 - final tesing or buffer day
+20 - Submit project
