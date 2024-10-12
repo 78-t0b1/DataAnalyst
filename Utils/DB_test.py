@@ -1,6 +1,6 @@
 from langchain_community.utilities import SQLDatabase
 
-db = SQLDatabase.from_uri("sqlite:///Data\DB\Sustain.db")
+db = SQLDatabase.from_uri("sqlite:///Data\DB\Chrismas.db")
 print(db.dialect)
 print('-------------------------')
 print(db.get_usable_table_names())

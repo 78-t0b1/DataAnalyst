@@ -1,0 +1,11 @@
+{
+    "DB":{
+        "Sustainablity":{
+            "Path":"Data\\DB\\Sustain.db"
+        },
+        "Christmas":{
+            "Path":"Data\\DB\\Christmas.db"
+        }
+
+    }
+}

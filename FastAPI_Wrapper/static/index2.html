@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Analytical Chatbot</title>
+
+    
+    <style>
+        /* Basic styling for the logo */
+        #logo {
+            height: 80px; /* Adjust the size of your logo */
+            width: auto;
+            padding: 40px;
+            margin-bottom: 20px;
+        }
+
+        /* You can add more styling for placement */
+        header {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            justify-content: center; /* Center the logo horizontally */
+            padding: 120px;
+            background-color: #e7dbf1; /* Background color */
+        }
+
+        h1 {
+            font-size: 32px;
+            color: #ca5ccb; /* Text color */
+            font-weight: bold;
+            margin: 0;
+            padding: 10px 0;
+            font-family: 'Quicksand', sans-serif;;
+        }
+
+    
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e7dbf1;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+
+        #chatContainer {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            height: 90vh;
+            width: 60vw;
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        #chatOutput {
+            flex-grow: 1;
+            padding: 20px;
+            background-color: #f3edf9;
+            overflow-y: auto;
+        }
+
+        #chatOutput p {
+            margin: 10px 0;
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        #chatOutput p.you {
+            background-color: #85c9d8;
+            color: #000;
+            text-align: right;
+        }
+
+        #chatOutput p.bot {
+            background-color: #ca5ccb;
+            color: #fff;
+        }
+
+        #inputContainer {
+            display: flex;
+            padding: 10px;
+            background-color: #ca5ccb;
+        }
+
+        #userMessage {
+            flex-grow: 1;
+            padding: 15px;
+            font-size: 18px;
+            border: 2px solid #85c9d8;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        #sendButton {
+            padding: 15px 20px;
+            margin-left: 10px;
+            font-size: 18px;
+            background-color: #85c9d8;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #sendButton:hover {
+            background-color: #70a9b4;
+        }
+
+        /* Loading indicator */
+        #loading {
+            display: none;
+            text-align: center;
+            color: #ca5ccb;
+            font-weight: bold;
+            padding: 10px;
+        }
+
+        /* Style for SQL query output */
+        .dropdown {
+            background-color: #f4f4f4;
+            border-radius: 5px;
+            margin: 10px 0;
+            padding: 10px;
+        }
+
+        .dropdown-header {
+            font-family: monospace;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dropdown-content {
+            display: none;
+            white-space: pre-wrap;
+            font-family: monospace;
+            color: #333;
+            margin-top: 10px;
+        }
+
+        .dropdown-content.active {
+            display: block;
+        }
+
+        /* Arrow styling */
+        .arrow {
+            transition: transform 0.3s ease;
+        }
+
+        .arrow.active {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <!-- Add the logoimage -->
+        <div><img id="logo" src="assets/Bounce_Insights_Logo.svg" alt="Logo"></div>
+        <div><h1>Analytic Chatbot</h1></div>
+            
+    </header>
+   
+
+<div id="chatContainer">
+    <div id="chatOutput"></div>
+    <div id="loading">Processing...</div> <!-- Loading indicator -->
+    <div id="inputContainer">
+        <input type="text" id="userMessage" placeholder="Type your message here..." />
+        <button id="sendButton" onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+    async function sendMessage() {
+        const message = document.getElementById('userMessage').value;
+        
+        // Show the loading indicator
+        document.getElementById('loading').style.display = 'block';
+
+        const response = await fetch('http://127.0.0.1:8000/chat/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message })
+        });
+        
+        if (!response.ok) {
+            console.error('Failed to send message:', response.statusText);
+            return;
+        }
+
+        const data = await response.json();
+        document.getElementById('chatOutput').innerHTML += 
+        `<p class="you"><strong>You:</strong> ${message}</p>
+                 <p class="bot"><strong>Bot:</strong> ${data.response}</p>
+                 <div class="dropdown">
+                    <div class="dropdown-header" onclick="toggleDropdown(this)">
+                        <span><strong>SQL Query:</strong></span>
+                        <span class="arrow">&#9660;</span>
+                    </div>
+                    <div class="dropdown-content">${data.SQL}</div>
+                 </div>  `      
+        // Clear the input after sending
+        document.getElementById('userMessage').value = '';
+        
+        // Hide the loading indicator
+        document.getElementById('loading').style.display = 'none';
+        
+        // Scroll to the bottom of chat
+        const chatOutput = document.getElementById('chatOutput');
+        chatOutput.scrollTop = chatOutput.scrollHeight;
+    }
+
+    function toggleDropdown(element) {
+        const content = element.nextElementSibling;
+        const arrow = element.querySelector('.arrow');
+
+        // Toggle active class for content visibility
+        content.classList.toggle('active');
+        arrow.classList.toggle('active');
+    }
+</script>
+
+</body>
+</html>

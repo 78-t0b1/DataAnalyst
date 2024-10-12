@@ -5,36 +5,60 @@ from langchain_core.prompts import PromptTemplate
 from dotenv import load_dotenv
 load_dotenv()
 from langchain_community.utilities import SQLDatabase
+import sqlparse
 
 class Agent:
     def __init__(self, DB_path) -> None:
         self.load_DB(DB_path)
-        self.sql_agent = create_sql_agent(self.llm, db=self.db, agent_type="openai-tools", verbose=True)
+        self.llm = ChatOpenAI(model="gpt-4o", temperature=0)
+        self.sql_agent = create_sql_agent(self.llm, db=self.db, agent_type="openai-tools", verbose=True,agent_executor_kwargs = {"return_intermediate_steps": True})
         self.query_gen_system = PromptTemplate.from_template("""
             You are a Business Analyst And you have recieved data from SQL agent. Given the following user question, and result, answer the user question. 
             question: {input}
             result: {output} 
             Answer:""")
-        self.llm = ChatOpenAI(model="gpt-4o", temperature=0)
-        self.chain = self.sql_agent | self.query_gen_system | self.llm | StrOutputParser()
+        
+        self.chain = self.query_gen_system | self.llm | StrOutputParser()
         
 
     def load_DB(self, DB_path):
-        self.db = SQLDatabase.from_uri(f"sqlite:///{DB_path}")
-        self.op_cols = self.db.run("""
-            SELECT Options from "Question_1";
-        """)
-        self.ques = self.db.run(
+        try:
+            self.db = SQLDatabase.from_uri(f"sqlite:///{DB_path}")
+            self.op_cols = self.db.run("""
+                SELECT Options from "Question_1";
+            """)
+            self.ques = self.db.run(
+                """
+                SELECT * from Questions;
             """
-            SELECT * from Questions;
-        """
-        )
+            )
+        except Exception as e:
+            raise "Error while runing basic queries to retrieve questions ans options. "+e
         
     def run(self, question):
-        response = self.chain.invoke(
-            {
+        self.response = self.sql_agent.invoke({
                 "input": f" Option column has values : {self.op_cols} And Questions table contain {self.ques} from survey which are linked with all other tables. Keeping that in mind {question}"
-            }
-        )
-        return response
+            })
+        query = self.get_exec_query()
+        query = self.format_sql(query)
+        
+        response = self.chain.invoke(self.response)
+
+        return {'response':response,'SQL':query}
+    
+    def get_exec_query(self):
+        try:
+            queries = []
+            for (log, output) in self.response["intermediate_steps"]:
+                if log.tool == 'sql_db_query':
+                    queries.append(log.tool_input)
+            return queries[-1]['query']
+        except Exception as e:
+            return f"Probllem while returning query. {e}"+ self.response
+        
+    def format_sql(self, query:str):
+        formatted_query = sqlparse.format(query, reindent=True, keyword_case='upper')
+        return formatted_query
+
+
 
