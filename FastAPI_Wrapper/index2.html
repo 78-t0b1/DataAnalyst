@@ -192,6 +192,7 @@
         document.getElementById('loading').style.display = 'block';
 
         const response = await fetch('https://dataanalyst.onrender.com/chat/', {
+        // const response = await fetch('https://127.0.0.1:8000/chat/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ message })

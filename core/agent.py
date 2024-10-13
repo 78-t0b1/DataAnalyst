@@ -19,10 +19,10 @@ sys.path.append(parent)
 class Agent:
     def __init__(self, DB_path) -> None:
         self.load_DB(DB_path)
-        self.llm = ChatOpenAI(model="gpt-4o", temperature=0)
+        self.llm = ChatOpenAI(model="gpt-4o", temperature=0, )
         self.sql_agent = create_sql_agent(self.llm, db=self.db, agent_type="openai-tools", verbose=True,agent_executor_kwargs = {"return_intermediate_steps": True})
         self.query_gen_system = PromptTemplate.from_template("""
-            You are a Business Analyst And you have recieved data from SQL agent. Given the following user question, and result, answer the user question. 
+            You are a Business Analyst And you have recieved data from SQL agent. Given the following user question, and result, answer the user question and elaborate it. 
             question: {input}
             result: {output} 
             Answer:""")
