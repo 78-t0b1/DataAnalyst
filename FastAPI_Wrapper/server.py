@@ -1,19 +1,25 @@
-from fastapi import FastAPI
 import sys,os
-from ..core.agent import Agent
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+sys.path.append(parent)
+
+from fastapi import FastAPI
+
+from core.agent import Agent
 import json
+import uvicorn
 from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 
-current = os.path.dirname(os.path.realpath(__file__))
-parent = os.path.dirname(current)
-sys.path.append(parent)
 
-from Definations import SUST_DB_PATH, HOMEPAGE_PATH
+
+from Definations import SUST_DB_PATH, HOMEPAGE_PATH, STATIC_FILE_PATH
 
 app = FastAPI()
+
+app.mount("/static", StaticFiles(directory=STATIC_FILE_PATH), name="static")
 
 class MessageRequest(BaseModel):
     message: str
@@ -48,4 +54,7 @@ async def chat(request: MessageRequest):
 #     allow_headers=["*"],  # Allow all headers
 # )
 
-app.mount("/static", StaticFiles(directory="FastAPI_Wrapper\\static"), name="static")
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -8,3 +8,4 @@ CHRIS_DB_PATH = os.path.join(ROOT_DIR, 'Data\\DB\\Chrismas.db')
 
 #WEB
 HOMEPAGE_PATH = os.path.join(ROOT_DIR, 'FastAPI_Wrapper\\index2.html')
+STATIC_FILE_PATH = os.path.join(ROOT_DIR, 'FastAPI_Wrapper\\static')
