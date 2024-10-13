@@ -8,6 +8,10 @@ from langchain_community.utilities import SQLDatabase
 import sqlparse
 import os,sys
 
+import logging
+logging.basicConfig(format="{levelname}:{name}:{message}", style="{")
+
+
 current = os.path.dirname(os.path.realpath(__file__))
 parent = os.path.dirname(current)
 sys.path.append(parent)
@@ -24,6 +28,7 @@ class Agent:
             Answer:""")
         
         self.chain = self.query_gen_system | self.llm | StrOutputParser()
+        logging.info('Agent is created!')
         
 
     def load_DB(self, DB_path):
@@ -38,12 +43,15 @@ class Agent:
             """
             )
         except Exception as e:
+            logging.error("Error while runing basic queries to retrieve questions ans options. "+e)
             raise "Error while runing basic queries to retrieve questions ans options. "+e
         
     def run(self, question):
+        logging.info('Agent is running!')
         self.response = self.sql_agent.invoke({
                 "input": f" Option column has values : {self.op_cols} And Questions table contain {self.ques} from survey which are linked with all other tables. Keeping that in mind {question}"
             })
+        
         query = self.get_exec_query()
         query = self.format_sql(query)
         
@@ -59,6 +67,7 @@ class Agent:
                     queries.append(log.tool_input)
             return queries[-1]['query']
         except Exception as e:
+            logging.error(f"Probllem while returning query. {e}"+ self.response)
             return f"Probllem while returning query. {e}"+ self.response
         
     def format_sql(self, query:str):

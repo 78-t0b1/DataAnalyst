@@ -13,7 +13,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 
-
+import logging
+logging.basicConfig(format="{levelname}:{name}:{message}", style="{")
 
 from Definations import SUST_DB_PATH, HOMEPAGE_PATH, STATIC_FILE_PATH
 
@@ -29,7 +30,7 @@ agent = Agent(DB_path=SUST_DB_PATH)
 
 @app.get("/", response_class=HTMLResponse)
 async def read_index():
-    
+    logging.info("Loading page")
     with open(HOMEPAGE_PATH) as f:
         html_content = f.read()
     return HTMLResponse(content=html_content)
@@ -40,10 +41,12 @@ async def root(message:str):
     
 @app.post("/chat/")
 async def chat(request: MessageRequest):
-    print(request)
+    # print(request)
+    logging.info('Request : '+request)
     # Call the AI agent's method to process the message
     response = agent.run(request.message)
-    print(response)
+    logging.info('Agent Response : '+response)
+    # print(response)
     return response
 
 # app.add_middleware(
