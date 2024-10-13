@@ -67,8 +67,8 @@ class Agent:
                     queries.append(log.tool_input)
             return queries[-1]['query']
         except Exception as e:
-            logging.error(f"Probllem while returning query. {e}"+ self.response)
-            return f"Probllem while returning query. {e}"+ self.response
+            logging.error(f"Probllem while returning query. {e}"+ str(self.response))
+            return f"Probllem while returning query. {e}"+ str(self.response)
         
     def format_sql(self, query:str):
         formatted_query = sqlparse.format(query, reindent=True, keyword_case='upper')
