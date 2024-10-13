@@ -5,6 +5,7 @@ import json
 from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
 
 app = FastAPI()
 
@@ -13,6 +14,13 @@ class MessageRequest(BaseModel):
 
 DB_path = 'Data\\DB\\Sustain.db'
 agent = Agent(DB_path=DB_path)
+
+@app.get("/", response_class=HTMLResponse)
+async def read_index():
+    
+    with open("FastAPI_Wrapper\\index2.html") as f:
+        html_content = f.read()
+    return HTMLResponse(content=html_content)
 
 @app.get("/message")
 async def root(message:str):
