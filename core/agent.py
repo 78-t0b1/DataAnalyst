@@ -6,6 +6,11 @@ from dotenv import load_dotenv
 load_dotenv()
 from langchain_community.utilities import SQLDatabase
 import sqlparse
+import os,sys
+
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+sys.path.append(parent)
 
 class Agent:
     def __init__(self, DB_path) -> None:

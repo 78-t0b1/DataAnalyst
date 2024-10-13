@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-import sys
+import sys,os
 from ..core.agent import Agent
 import json
 from pydantic import BaseModel
@@ -7,18 +7,24 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 
+current = os.path.dirname(os.path.realpath(__file__))
+parent = os.path.dirname(current)
+sys.path.append(parent)
+
+from Definations import SUST_DB_PATH, HOMEPAGE_PATH
+
 app = FastAPI()
 
 class MessageRequest(BaseModel):
     message: str
 
-DB_path = 'Data\\DB\\Sustain.db'
-agent = Agent(DB_path=DB_path)
+
+agent = Agent(DB_path=SUST_DB_PATH)
 
 @app.get("/", response_class=HTMLResponse)
 async def read_index():
     
-    with open("FastAPI_Wrapper\\index2.html") as f:
+    with open(HOMEPAGE_PATH) as f:
         html_content = f.read()
     return HTMLResponse(content=html_content)
 
