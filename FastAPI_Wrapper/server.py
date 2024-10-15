@@ -46,7 +46,8 @@ async def chat(request: MessageRequest):
     # print(request)
     logging.info('Request : '+str(request))
     # Call the AI agent's method to process the message
-    response = agent.run(request.message)
+    # response = agent.run(request.message)
+    response = master.run(request.message)
     logging.info('Agent Response : '+str(response))
     # print(response)
     return response
