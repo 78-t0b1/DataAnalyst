@@ -6,6 +6,7 @@ sys.path.append(parent)
 from fastapi import FastAPI
 
 from core.agent import Agent
+from core.analyst import MasterAnalyst
 import json
 import uvicorn
 from pydantic import BaseModel
@@ -27,6 +28,7 @@ class MessageRequest(BaseModel):
 
 
 agent = Agent(DB_path=SUST_DB_PATH)
+master = MasterAnalyst()
 
 @app.get("/", response_class=HTMLResponse)
 async def read_index():
@@ -37,7 +39,7 @@ async def read_index():
 
 @app.get("/message")
 async def root(message:str):
-    return json.dumps(agent.run(message))
+    return json.dumps(master.run(message))
     
 @app.post("/chat/")
 async def chat(request: MessageRequest):

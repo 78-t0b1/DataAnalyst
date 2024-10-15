@@ -48,16 +48,21 @@ class Agent:
         
     def run(self, question):
         logging.info('Agent is running!')
-        self.response = self.sql_agent.invoke({
-                "input": f" Option column has values : {self.op_cols} And Questions table contain {self.ques} from survey which are linked with all other tables. Keeping that in mind {question}"
-            })
-        
-        query = self.get_exec_query()
-        query = self.format_sql(query)
-        
-        response = self.chain.invoke(self.response)
+        if question:
+            self.response = self.sql_agent.invoke({
+                    "input": f" Option column has values : {self.op_cols} And Questions table contain {self.ques} from survey which are linked with all other tables. Keeping that in mind {question}"
+                })
+            query = self.get_exec_query()
+            query = self.format_sql(query)
+            
+            response = self.chain.invoke(self.response)
 
-        return {'response':response,'SQL':query}
+            return {'response':response,'SQL':query}
+        else:
+            response = 'No question asked'
+            return {'response':response,'SQL':''}
+        
+        
     
     def get_exec_query(self):
         try:
