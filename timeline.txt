@@ -10,3 +10,14 @@ Try to impliment graph generator to show insights.(Experimental)
 18 - Create PPT of whole journey
 19 - final tesing or buffer day
 20 - Submit project
+
+
+
+
+
+Improvements:
+1. Send ----> Get answer.
+2. Type your message --> Ask me question.
+3. Try to format markdown output.
+4. Bold all numbers
+5. Rendering / displaying the source to backup any results provided by system

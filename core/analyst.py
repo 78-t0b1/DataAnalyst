@@ -113,7 +113,10 @@ class MasterAnalyst:
             Sustain Agent output: {sust}
             Chrismas Agent output: {chris}                                              
             question: {que} 
-            Answer:""")
+            Answer:
+            
+            Try to include quantitative summaries in answer."""
+                    )
         
         final_chain = self.query_gen_system | self.llm | StrOutputParser()
         return final_chain
