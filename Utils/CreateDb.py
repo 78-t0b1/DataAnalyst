@@ -96,6 +96,7 @@ def to_sql(df, db_name):
                 if tables and int(x)>0:
                     table_df.drop(columns=['Total'],inplace=True) #Drop Total column
                 table_df['Options'] = indexes[1:]
+                table_df = clear_table(table_df)
                 tables.append(table_df)
 
                 print(table_df)
@@ -122,7 +123,7 @@ def to_sql(df, db_name):
         # table_df = clear_table(table_df)
         # print(table_df)
         tables.append(table_df)
-    df_q = pd.read_csv('data\\Files\\Questions_chrismas.csv',encoding='unicode_escape')
+    df_q = pd.read_csv('data\\Files\\Questions_sust.csv',encoding='unicode_escape')
     df_q.to_sql('Questions', conn, if_exists='replace', index=False)
     conn.close()
 
@@ -140,4 +141,4 @@ def main(path, db_name):
     
 
 if __name__ == "__main__":
-    main('Data\\Files\\Chrismas.xlsx','Chrismas')
+    main('Data\\Files\\Sustain.xlsx','Sustain2')

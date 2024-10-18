@@ -1,5 +1,6 @@
 from langchain_openai import ChatOpenAI
 from langchain_community.agent_toolkits import create_sql_agent
+from sqlalchemy import create_engine, text
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import PromptTemplate
 from dotenv import load_dotenv
@@ -7,6 +8,7 @@ load_dotenv()
 from langchain_community.utilities import SQLDatabase
 import sqlparse
 import os,sys
+import pandas as pd
 
 import logging
 logging.basicConfig(format="{levelname}:{name}:{message}", style="{")
@@ -19,10 +21,10 @@ sys.path.append(parent)
 class Agent:
     def __init__(self, DB_path) -> None:
         self.load_DB(DB_path)
-        self.llm = ChatOpenAI(model="gpt-4o", temperature=0, )
+        self.llm = ChatOpenAI(model="gpt-4o", temperature=0 )
         self.sql_agent = create_sql_agent(self.llm, db=self.db, agent_type="openai-tools", verbose=True,agent_executor_kwargs = {"return_intermediate_steps": True})
         self.query_gen_system = PromptTemplate.from_template("""
-            You are a Business Analyst And you have recieved data from SQL agent. Given the following user question, and result, answer the user question and elaborate it. 
+            You are a Business Analyst And you have recieved data from SQL agents. Given the following user question and results, answer the user question and elaborate it. 
             question: {input}
             result: {output} 
             Answer:""")
@@ -43,8 +45,8 @@ class Agent:
             """
             )
         except Exception as e:
-            logging.error("Error while runing basic queries to retrieve questions ans options. "+e)
-            raise "Error while runing basic queries to retrieve questions ans options. "+e
+            logging.error(f"Error while runing basic queries to retrieve questions ans options. {e}")
+            raise f"Error while runing basic queries to retrieve questions ans options. {e}"
         
     def run(self, question):
         logging.info('Agent is running!')

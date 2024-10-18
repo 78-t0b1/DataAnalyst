@@ -14,10 +14,28 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 
-import logging
-logging.basicConfig(format="{levelname}:{name}:{message}", style="{")
-
 from Definations import SUST_DB_PATH, HOMEPAGE_PATH, STATIC_FILE_PATH
+
+import logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.DEBUG)
+
+file_handler = logging.FileHandler('app.log')
+file_handler.setLevel(logging.INFO) 
+
+file_handler = logging.FileHandler('app.log')
+
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+console_handler.setFormatter(formatter)
+file_handler.setFormatter(formatter)
+
+logger.addHandler(console_handler)
+logger.addHandler(file_handler)
+
 
 app = FastAPI()
 
@@ -27,7 +45,7 @@ class MessageRequest(BaseModel):
     message: str
 
 
-agent = Agent(DB_path=SUST_DB_PATH)
+# agent = Agent(DB_path=SUST_DB_PATH)
 master = MasterAnalyst()
 
 @app.get("/", response_class=HTMLResponse)
@@ -43,12 +61,13 @@ async def root(message:str):
     
 @app.post("/chat/")
 async def chat(request: MessageRequest):
-    # print(request)
-    logging.info('Request : '+str(request))
+    logger.info(f"Request : {request}")
+    # logging.info('Request : '+str(request))
     # Call the AI agent's method to process the message
     # response = agent.run(request.message)
     response = master.run(request.message)
-    logging.info('Agent Response : '+str(response))
+    # logger.info(f'Message chain : {master.messages}')
+    logger.info('Agent Response : '+str(response))
     # print(response)
     return response
 

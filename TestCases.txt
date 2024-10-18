@@ -4,3 +4,5 @@
 'which region has buying a brand / product for ethical or sustainability reasons the most ?'
 
 que = 'Which gender is more willing to pay more for for Food & Beverage , that are more environmentally conscious?'
+
+How does the amount consumers plan to spend on Christmas purchases compare to their willingness to pay more for products with sustainable practices?

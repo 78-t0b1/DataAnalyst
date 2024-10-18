@@ -4,6 +4,7 @@ import pandas as pd
 from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_community.utilities import SQLDatabase
 from langchain_core.output_parsers import StrOutputParser
+from langchain_core.messages import AIMessage, HumanMessage
  
 from pydantic import BaseModel, Field
 import warnings
@@ -15,12 +16,9 @@ print(load_dotenv())
 from Definations import *
 from core.agent import Agent
 
-
-
-
-
 import logging
-logging.basicConfig(format="{levelname}:{name}:{message}", style="{")
+module_logger = logging.getLogger('master_analyst')
+
 
 class SubmitFinalAnswer(BaseModel):
     """Submit the final answer to the user based on the query results."""
@@ -29,10 +27,11 @@ class SubmitFinalAnswer(BaseModel):
 
 class MasterAnalyst:
     def __init__(self):
-        sust_schema = self.load_schema(SUST_DB_PATH)
-        chris_schema = self.load_schema(CHRIS_DB_PATH)
+        sust_schema, sust_que = self.load_schema(SUST_DB_PATH)
+        chris_schema, chris_que = self.load_schema(CHRIS_DB_PATH)
         self.activateSQLgen = True
-
+        print(sust_que)
+        print(chris_que)
         self.main_prompt = f"""
                 You are a Business Analyst who recieved this question from client. 
                 You have two SQL agents one is for Chrismas.db with schema : {chris_schema} , 
@@ -69,9 +68,14 @@ class MasterAnalyst:
     def load_schema(self, DB_path):
             try:
                 db = SQLDatabase.from_uri(f"sqlite:///{DB_path}")
-                return db.run("SELECT sql FROM sqlite_master WHERE type='table';")
+                schema = db.run("SELECT sql FROM sqlite_master WHERE type='table';")
+                ques = db.run("""
+                SELECT * from Questions;
+            """)
+                
+                return schema, ques
             except Exception as e:
-                logging.error("Error while runing basic queries to retrieve schema. "+e)
+                module_logger.error("Error while runing basic queries to retrieve schema. "+e)
                 raise "Error while runing basic queries to retrieve schema. "+e
             
     def determine_que(self):
@@ -94,11 +98,13 @@ class MasterAnalyst:
                         for key in main_res.keys():
                             if responce.startswith(key):
                                 res_sep = responce.split(':', 1)  
-                                main_res[res_sep[0]] = res_sep[1].strip()  
+                                main_res[res_sep[0]] = res_sep[1].strip()
+                                print(main_res[res_sep[0]])  
             return main_res
         
         except Exception as e:
-            logging.error("Error while determining question type. "+e)
+            module_logger.error("Error while determining question type. "+e)
+            raise "Error while determining question type. "+e
 
     def assign_agents(self, response):
         self.DB_respoce = {'Sustain.db': None, 'Chris.db': None}
