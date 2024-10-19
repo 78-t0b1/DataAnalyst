@@ -30,8 +30,6 @@ class MasterAnalyst:
         sust_schema, sust_que = self.load_schema(SUST_DB_PATH)
         chris_schema, chris_que = self.load_schema(CHRIS_DB_PATH)
         self.activateSQLgen = True
-        print(sust_que)
-        print(chris_que)
         self.main_prompt = f"""
                 You are a Business Analyst who recieved this question from client. 
                 You have two SQL agents one is for Chrismas.db with schema : {chris_schema} , 

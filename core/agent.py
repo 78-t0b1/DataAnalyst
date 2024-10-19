@@ -114,7 +114,7 @@ class Agent:
         
     def generate_graphs(self):
         try:
-            fig, ax = plt.subplots(figsize=(8, 5))
+            fig, ax = plt.subplots(figsize=(12, 5))
             self.df.plot(kind='bar', ax=ax)
             buf = io.BytesIO()
             # plt.show(fig)
