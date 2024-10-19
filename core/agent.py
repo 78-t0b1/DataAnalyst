@@ -56,7 +56,7 @@ class Agent:
         
         self.chain = self.query_gen_system | self.llm | StrOutputParser()
         
-        logger.info('Agent is created!')
+        logger.info("Agent is created!")
         
 
     def load_DB(self, DB_path):
@@ -80,10 +80,10 @@ class Agent:
         
     def run(self, question):
         try:
-            logger.info('Agent is running!')
+            logger.info("Agent is running!")
 
             if question:
-                logger.info(f'Options:  {self.op_cols}, Questions: {self.ques}')
+                logger.info(f"Options:  {self.op_cols}, Questions: {self.ques}")
                 self.response = self.sql_agent.invoke({
                         "input": f" Option column has values : {self.op_cols} And Questions table contain {self.ques} from survey which are linked with all other tables. Keeping that in mind {question}. If you use LIMIT in query use LIMIT 1. If you want to use WHERE clouse, Always use WHERE clause on 'Options' column."
                     })
@@ -93,13 +93,16 @@ class Agent:
                 response = self.chain.invoke(self.response)
 
                 table = self.get_query_op_json(query)
+                op = {'response':response,'SQL':query, 'table': table, 'img': self.img_base64}
+                logger.info(op)
 
-                return {'response':response,'SQL':query, 'table': table, 'img': self.img_base64}
+                return op
             else:
                 response = 'No question asked'
                 return {'response':response,'SQL':'', 'table': '', 'img': ''}
         
         except Exception as e:
+            logger.error(f"Error while runing SQL agent. {e}")
             raise Exception (f"Error while runing SQL agent. {e}")
         
     
@@ -132,15 +135,16 @@ class Agent:
         try:
             fig, ax = plt.subplots(figsize=(15, 5))
             self.df.plot(kind='bar', ax=ax)
-            ax.legend(loc='center right', bbox_to_anchor=(1.25, 0.5))
+            ax.legend(loc='center left', bbox_to_anchor=(1.25, 0.5))
             buf = io.BytesIO()
             # plt.show(fig)
-            plt.savefig(buf, format='png')
+            plt.savefig(buf, format='png', bbox_extra_artists=[ax.legend()], bbox_inches='tight')
             plt.close(fig)
             buf.seek(0)
 
             # Encode the image in base64
-            self.img_base64 = 'data:image/png;base64,' +base64.b64encode(buf.getvalue()).decode('utf-8')
+            self.img_base64 = 'data:image/png;base64,'+base64.b64encode(buf.getvalue()).decode('utf-8')
+            logger.info(f"IMAGE: {self.img_base64}")
         except Exception as e:
             self.img_base64 = e
         

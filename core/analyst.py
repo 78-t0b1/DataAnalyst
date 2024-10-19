@@ -85,7 +85,7 @@ class MasterAnalyst:
             res = res.dict()
 
             main_res = {'Orignal Question':self.que,'Sustain.db Question':'','Chrismas.db Question':'','Response':''}
-            logger.info(f'content: {res['content']}')
+            logger.info(f"content: {res['content']}")
             responces = res['content'].split('|')
             if len(res)==1:
                 main_res['Response'] = res[0]
@@ -136,6 +136,8 @@ class MasterAnalyst:
         sustain_image_base64 = self.DB_respoce['Sustain.db']['img']
         chris_image_base64 = self.DB_respoce['Chris.db']['img']
         self.messages.append(AIMessage(main_respose))
+        logger.info(f"SUST_IMAGE: {sustain_image_base64}")
+        logger.info(f"CHRIS_IMAGE: {chris_image_base64}")
 
         return {'response': main_respose, 'SQL': SQL_combine, 'sust_table': self.DB_respoce['Sustain.db']['table'], 'chris_table': self.DB_respoce['Chris.db']['table'], 'sustain_image_base64':sustain_image_base64, 'chris_image_base64': chris_image_base64 }
 

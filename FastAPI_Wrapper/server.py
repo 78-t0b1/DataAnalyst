@@ -60,7 +60,7 @@ async def reset():
     global chat_context
     # Reset or clear the chat context here
     master.messages = []
-    logger.info(f'Message chain : {master.messages}')
+    logger.info(f"Message chain : {master.messages}")
     return {"message": "Chat context reset successfully."}
     
 @app.post("/chat/")
@@ -70,7 +70,7 @@ async def chat(request: MessageRequest):
     # Call the AI agent's method to process the message
     # response = agent.run(request.message)
     response = master.run(request.message)
-    logger.info(f'Message chain : {master.messages}')
+    logger.info(f"Message chain : {master.messages}")
     # logger.info('Agent Response : '+str(response))
     # print(response)
     return response
