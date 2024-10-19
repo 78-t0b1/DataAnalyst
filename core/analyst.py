@@ -140,8 +140,10 @@ class MasterAnalyst:
 
             Chris.db : {self.DB_respoce['Chris.db']['SQL']}
 """
+        sustain_image_base64 = self.DB_respoce['Sustain.db']['img']
+        chris_image_base64 = self.DB_respoce['Chris.db']['img']
 
-        return {'response': main_respose, 'SQL': SQL_combine }
+        return {'response': main_respose, 'SQL': SQL_combine, 'sust_table': self.DB_respoce['Sustain.db']['table'], 'chris_table': self.DB_respoce['Chris.db']['table'], 'sustain_image_base64':sustain_image_base64, 'chris_image_base64': chris_image_base64 }
 
 
 
