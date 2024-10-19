@@ -1,11 +1,12 @@
 from langchain_openai import ChatOpenAI
 from langchain_community.agent_toolkits import create_sql_agent
+from langchain_community.utilities import SQLDatabase
 from sqlalchemy import create_engine, text
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import PromptTemplate
 from dotenv import load_dotenv
 load_dotenv()
-from langchain_community.utilities import SQLDatabase
+
 import sqlparse
 import os,sys
 import pandas as pd
@@ -14,7 +15,24 @@ import matplotlib.pyplot as plt
 import io
 
 import logging
-logging.basicConfig(format="{levelname}:{name}:{message}", style="{")
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.DEBUG)
+
+file_handler = logging.FileHandler('app.log')
+file_handler.setLevel(logging.INFO) 
+
+file_handler = logging.FileHandler('app.log')
+
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+console_handler.setFormatter(formatter)
+file_handler.setFormatter(formatter)
+
+logger.addHandler(console_handler)
+logger.addHandler(file_handler)
 
 
 current = os.path.dirname(os.path.realpath(__file__))
@@ -25,30 +43,26 @@ class Agent:
     def __init__(self, DB_path) -> None:
         self.load_DB(DB_path)
         self.llm = ChatOpenAI(model="gpt-4o", temperature=0 )
-        self.sql_agent = create_sql_agent(self.llm, db=self.db, agent_type="openai-tools", verbose=True,agent_executor_kwargs = {"return_intermediate_steps": True})
+        self.sql_agent = create_sql_agent(self.llm, 
+                                          db=self.db, 
+                                          agent_type="openai-tools", 
+                                          verbose=True,
+                                          agent_executor_kwargs = {"return_intermediate_steps": True})
         self.query_gen_system = PromptTemplate.from_template("""
-            You are a Business Analyst And you have recieved data from SQL agents. Given the following user question and results, answer the user question and elaborate it. 
+            You are a Business Analyst And you have recieved data from SQL agents. Given the following user question and results, answer the user question and elaborate it.Always create bullet points. 
             question: {input}
             result: {output} 
             Answer:""")
         
         self.chain = self.query_gen_system | self.llm | StrOutputParser()
-        logging.info('Agent is created!')
+        
+        logger.info('Agent is created!')
         
 
     def load_DB(self, DB_path):
         try:
             self.engine = create_engine(f"sqlite:///{DB_path}")
             self.db = SQLDatabase(self.engine)
-            # self.db = SQLDatabase.from_uri(f"sqlite:///{DB_path}")
-            # self.op_cols = self.db.run("""
-            #     SELECT Options from "Question_1";
-            # """)
-            # self.ques = self.db.run(
-            #     """
-            #     SELECT * from Questions;
-            # """
-            # )
             op_cols_query = """
                  SELECT Options from "Question_1";
              """
@@ -61,15 +75,17 @@ class Agent:
             
 
         except Exception as e:
-            logging.error(f"Error while runing basic queries to retrieve questions ans options. {e}")
-            raise f"Error while runing basic queries to retrieve questions ans options. {e}"
+            logger.error(f"Error while runing basic queries to retrieve questions ans options. {e}")
+            raise Exception (f"Error while runing basic queries to retrieve questions ans options. {e}")
         
     def run(self, question):
         try:
-            logging.info('Agent is running!')
+            logger.info('Agent is running!')
+
             if question:
+                logger.info(f'Options:  {self.op_cols}, Questions: {self.ques}')
                 self.response = self.sql_agent.invoke({
-                        "input": f" Option column has values : {self.op_cols} And Questions table contain {self.ques} from survey which are linked with all other tables. Keeping that in mind {question}. If you use LIMIT in query use LIMIT 1"
+                        "input": f" Option column has values : {self.op_cols} And Questions table contain {self.ques} from survey which are linked with all other tables. Keeping that in mind {question}. If you use LIMIT in query use LIMIT 1. If you want to use WHERE clouse, Always use WHERE clause on 'Options' column."
                     })
                 query = self.get_exec_query()
                 query = self.format_sql(query)
@@ -84,7 +100,7 @@ class Agent:
                 return {'response':response,'SQL':'', 'table': '', 'img': ''}
         
         except Exception as e:
-            raise f"Error while runing SQL agent. {e}"
+            raise Exception (f"Error while runing SQL agent. {e}")
         
     
     def get_exec_query(self):
@@ -114,8 +130,9 @@ class Agent:
         
     def generate_graphs(self):
         try:
-            fig, ax = plt.subplots(figsize=(12, 5))
+            fig, ax = plt.subplots(figsize=(15, 5))
             self.df.plot(kind='bar', ax=ax)
+            ax.legend(loc='center right', bbox_to_anchor=(1.25, 0.5))
             buf = io.BytesIO()
             # plt.show(fig)
             plt.savefig(buf, format='png')

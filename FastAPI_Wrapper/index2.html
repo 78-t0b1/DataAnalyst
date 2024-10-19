@@ -203,6 +203,7 @@
     <div id="inputContainer">
         <input type="text" id="userMessage" placeholder="Ask me question..." />
         <button id="sendButton" onclick="sendMessage()">Get answer</button>
+        <button id="resetButton" onclick="resetContext()">Reset</button>
     </div>
 </div>
 
@@ -215,8 +216,8 @@
     // Show the loading indicator
     document.getElementById('loading').style.display = 'block';
 
-        const response = await fetch('https://dataanalyst.onrender.com/chat/', {
-        // const response = await fetch('http://127.0.0.1:8000/chat/', {
+        // const response = await fetch('https://dataanalyst.onrender.com/chat/', {
+        const response = await fetch('http://127.0.0.1:8000/chat/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ message })
@@ -305,6 +306,25 @@
     // Scroll to the bottom of chat
     const chatOutput = document.getElementById('chatOutput');
     chatOutput.scrollTop = chatOutput.scrollHeight;
+}
+
+async function resetContext() {
+    const response = await fetch('http://127.0.0.1:8000/reset/', {
+            method: 'GET',
+        });
+        if (response.ok) {
+            const data = await response.json();
+            console.log(data.message); // Optional: log success message from the server
+
+            // Clear the chat window in the UI
+            document.getElementById('chatOutput').innerHTML = '';
+
+            // Optionally, clear the user input field as well
+            document.getElementById('userMessage').value = '';
+
+        } else {
+            console.error('Failed to reset chatbot context:', response.statusText);
+        }
 }
 
    // Function to create the table

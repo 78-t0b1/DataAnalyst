@@ -87,12 +87,15 @@ def to_sql(df, db_name):
                 # print(table_df.head())
                 # table_df = clear_table(table_df)
                 # table_df['Question_Number'] = i
-                indexes = df.columns.to_list()
-                print(indexes)
+                indexes = df.columns.str.replace('\n', '').str.strip()
+                indexes = indexes.to_list()
+                # print(indexes)
                 table_df = table_df.drop_duplicates().T.reset_index(drop=True)
                 table_df[100] = df.loc[0].tolist() 
                 table_df.columns = table_df.loc[0]
+                table_df.columns = table_df.columns.str.replace('\n', '').str.strip()
                 table_df = table_df.drop(index=0)
+                table_df['Question_Number'] = i
                 if tables and int(x)>0:
                     table_df.drop(columns=['Total'],inplace=True) #Drop Total column
                 table_df['Options'] = indexes[1:]
@@ -123,7 +126,7 @@ def to_sql(df, db_name):
         # table_df = clear_table(table_df)
         # print(table_df)
         tables.append(table_df)
-    df_q = pd.read_csv('data\\Files\\Questions_sust.csv',encoding='unicode_escape')
+    df_q = pd.read_csv('data\\Files\\Questions_chrismas.csv',encoding='unicode_escape')
     df_q.to_sql('Questions', conn, if_exists='replace', index=False)
     conn.close()
 
@@ -141,4 +144,4 @@ def main(path, db_name):
     
 
 if __name__ == "__main__":
-    main('Data\\Files\\Sustain.xlsx','Sustain2')
+    main('Data\\Files\\Chrismas.xlsx','Chrismas3')
