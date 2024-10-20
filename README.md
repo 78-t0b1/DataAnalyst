@@ -30,7 +30,7 @@ Live on : https://dataanalyst.onrender.com/
 - GPT-4o: [Website](https://platform.openai.com/docs/models)
 
 ## Requirements:
-- Operating System: Linux OS or Windows. (I am running the project on windows)
+- Operating System: Linux OS or Windows. (I am running this chatbot on Windows)
 - OpenAI Credentials: Required for GPT functionality.
 - Install SQLite3 [Link](https://www.sqlite.org/download.html).
 
@@ -79,7 +79,6 @@ HF_API_KEY = XXXXXXXXXXXXXXXXXXXX
 ```
 
 2. Activate virtual enviroment :
-
 ```cmd
 cd <path_to_folder>
 .\bin\activate
@@ -123,6 +122,6 @@ overall and with spending.
 
 ## Key frameworks/libraries used in this chatbot:
 - Python 3.11.3: [Documentation](https://www.python.org/downloads/release/python-3113/) 
-- Langchain: [introduction](https://python.langchain.com/docs/get_started/introduction)
+- Langchain: [Introduction](https://python.langchain.com/docs/get_started/introduction)
 - OpenAI: [Developer quickstart](https://platform.openai.com/docs/quickstart?context=python)
 - SQLAlchemy [Documentation](https://www.sqlalchemy.org/)
