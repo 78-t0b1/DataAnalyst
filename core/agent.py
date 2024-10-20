@@ -40,6 +40,11 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 class Agent:
+    """ 
+    This Agent is a combination of SQL agent and BA agent.
+    SQL agent will crerate sql queries and returns the output.
+    BA agent will analyse the given output and convert it to business insight.
+    """
     def __init__(self, DB_path) -> None:
         self.load_DB(DB_path)
         self.llm = ChatOpenAI(model="gpt-4o", temperature=0 )
@@ -60,6 +65,12 @@ class Agent:
         
 
     def load_DB(self, DB_path):
+        """
+        Load database
+
+        Args:
+        DB_path: Database path
+        """
         try:
             self.engine = create_engine(f"sqlite:///{DB_path}")
             self.db = SQLDatabase(self.engine)
@@ -79,6 +90,11 @@ class Agent:
             raise Exception (f"Error while runing basic queries to retrieve questions ans options. {e}")
         
     def run(self, question):
+        """
+        main flow
+
+        Args: Question given by master analyst.
+        """
         try:
             logger.info("Agent is running!")
 
@@ -107,6 +123,9 @@ class Agent:
         
     
     def get_exec_query(self):
+        """
+        Get final SQL query which is used to generate output.
+        """
         try:
             queries = []
             for (log, output) in self.response["intermediate_steps"]:
@@ -117,11 +136,20 @@ class Agent:
             logging.error(f"Probllem while returning query. {e}"+ str(self.response))
             return f"Probllem while returning query. {e}"+ str(self.response)
         
-    def format_sql(self, query:str):
+    def format_sql(self, query):
+        """
+        Format SQl query in a presentable format.
+
+        Args: 
+        query: SQL query
+        """
         formatted_query = sqlparse.format(query, reindent=True, keyword_case='upper')
         return formatted_query
 
     def get_query_op_json(self, query):
+        """
+        Get query output in Json format for Table.
+        """
         try:
             with self.engine.connect() as connection:
                 self.df = pd.read_sql(query, connection)
@@ -132,6 +160,9 @@ class Agent:
             return None
         
     def generate_graphs(self):
+        """
+        Generate catagory plot
+        """
         try:
             fig, ax = plt.subplots(figsize=(15, 5))
             self.df.plot(kind='bar', ax=ax)

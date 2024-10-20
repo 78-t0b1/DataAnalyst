@@ -44,6 +44,10 @@ class SubmitFinalAnswer(BaseModel):
 
 
 class MasterAnalyst:
+    """
+    The MasterAnalyst class serves as the primary agent responsible for interpreting user queries, determining the appropriate database to query, 
+    and consolidating the results. It collects outputs from various Business Analyst (BA) agents and generates a comprehensive response.
+    """
     def __init__(self):
         sust_schema, sust_que = self.load_schema(SUST_DB_PATH)
         chris_schema, chris_que = self.load_schema(CHRIS_DB_PATH)
@@ -66,19 +70,28 @@ class MasterAnalyst:
 
 
     def load_schema(self, DB_path):
-            try:
-                db = SQLDatabase.from_uri(f"sqlite:///{DB_path}")
-                schema = db.run("SELECT sql FROM sqlite_master WHERE type='table';")
-                ques = db.run("""
-                SELECT * from Questions;
-            """)
-                
-                return schema, ques
-            except Exception as e:
-                logger.error("Error while runing basic queries to retrieve schema. "+e)
-                raise Exception (f"Error while runing basic queries to retrieve schema. {e}")
+        """
+        Load database schema and questions
+
+        Args: 
+        DB_path: Database path
+        """
+        try:
+            db = SQLDatabase.from_uri(f"sqlite:///{DB_path}")
+            schema = db.run("SELECT sql FROM sqlite_master WHERE type='table';")
+            ques = db.run("""
+            SELECT * from Questions;
+        """)
+            
+            return schema, ques
+        except Exception as e:
+            logger.error("Error while runing basic queries to retrieve schema. "+e)
+            raise Exception (f"Error while runing basic queries to retrieve schema. {e}")
             
     def determine_que(self):
+        """
+        Determines the category or type of the user's question. And created appropriate question for SQL agents respectively.
+        """
         try:
             self.messages.append(HumanMessage(self.que))
             res = self.query_gen.invoke({"messages": self.messages, "question": self.que})
@@ -109,38 +122,52 @@ class MasterAnalyst:
             raise Exception(f"Error while determining question type. {e}")
 
     def assign_agents(self, response):
+        """
+        Get responces from both SQL agents.
+        """
         self.DB_respoce = {'Sustain.db': None, 'Chris.db': None}
         self.DB_respoce['Sustain.db'] = self.sust_agent.run(response['Sustain.db Question'])
         self.DB_respoce['Chris.db'] = self.chris_agent.run(response['Chrismas.db Question'])
 
         
     def final_answer_gen(self):
+        """
+        Generate Final answer for user.
+        """
         self.final_analyst = PromptTemplate.from_template(FINAL_ANALYST_PROMPT)
         
         final_chain = self.final_analyst | self.llm | StrOutputParser()
         return final_chain
     
     def run(self, que):
-        self.que = que
-        response = self.determine_que()
-        if self.activateSQLgen == False:
-            return {'response': response, 'SQL': '' }
-        self.assign_agents(response)
-        final_chain = self.final_answer_gen()
-        main_respose = final_chain.invoke({'que':self.que, 'sust':self.DB_respoce['Sustain.db']['response'], 'chris':self.DB_respoce['Chris.db']['response']})
-        SQL_combine = f"""
-            Sustain.db : {self.DB_respoce['Sustain.db']['SQL']}
+        """
+        Main flow
 
-            Chris.db : {self.DB_respoce['Chris.db']['SQL']}
-"""
-        sustain_image_base64 = self.DB_respoce['Sustain.db']['img']
-        chris_image_base64 = self.DB_respoce['Chris.db']['img']
-        self.messages.append(AIMessage(main_respose))
-        logger.info(f"SUST_IMAGE: {sustain_image_base64}")
-        logger.info(f"CHRIS_IMAGE: {chris_image_base64}")
+        Args:
+        que: user question
+        """
+        try:
+            self.que = que
+            response = self.determine_que()
+            if self.activateSQLgen == False:
+                return {'response': response, 'SQL': '' }
+            self.assign_agents(response)
+            final_chain = self.final_answer_gen()
+            main_respose = final_chain.invoke({'que':self.que, 'sust':self.DB_respoce['Sustain.db']['response'], 'chris':self.DB_respoce['Chris.db']['response']})
+            SQL_combine = f"""
+                Sustain.db : {self.DB_respoce['Sustain.db']['SQL']}
 
-        return {'response': main_respose, 'SQL': SQL_combine, 'sust_table': self.DB_respoce['Sustain.db']['table'], 'chris_table': self.DB_respoce['Chris.db']['table'], 'sustain_image_base64':sustain_image_base64, 'chris_image_base64': chris_image_base64 }
+                Chris.db : {self.DB_respoce['Chris.db']['SQL']}
+    """
+            sustain_image_base64 = self.DB_respoce['Sustain.db']['img']
+            chris_image_base64 = self.DB_respoce['Chris.db']['img']
+            self.messages.append(AIMessage(main_respose))
+            logger.info(f"SUST_IMAGE: {sustain_image_base64}")
+            logger.info(f"CHRIS_IMAGE: {chris_image_base64}")
 
+            return {'response': main_respose, 'SQL': SQL_combine, 'sust_table': self.DB_respoce['Sustain.db']['table'], 'chris_table': self.DB_respoce['Chris.db']['table'], 'sustain_image_base64':sustain_image_base64, 'chris_image_base64': chris_image_base64 }
+        except Exception as e:
+            return {'response': e, 'SQL': '', 'sust_table': '', 'chris_table': '', 'sustain_image_base64':'', 'chris_image_base64': ''}
 
 
 
