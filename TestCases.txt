@@ -1,8 +1,9 @@
-{"messages": [("user", f" Option column has values : {op_cols} And Questions table contain {ques} from survey which are linked with all other tables. Keeping that in mind How much male buy sustainable and enviromentaly friendly products? only return query")]}
-"input": f" Option column has values : {op_cols} And Questions table contain {ques} from survey which are linked with all other tables. Keeping that in mind Which gender is more willing to pay more for for products, that are more environmentally conscious?"
+How much male buy sustainable and enviromentaly friendly products? only return query
 
-'which region has buying a brand / product for ethical or sustainability reasons the most ?'
+Which gender is more willing to pay more for for products, that are more environmentally conscious?
 
-que = 'Which gender is more willing to pay more for for Food & Beverage , that are more environmentally conscious?'
+Which region has buying a brand / product for ethical or sustainability reasons the most ?
+
+Which gender is more willing to pay more for for Food & Beverage , that are more environmentally conscious?
 
 How does the amount consumers plan to spend on Christmas purchases compare to their willingness to pay more for products with sustainable practices?
