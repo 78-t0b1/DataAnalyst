@@ -123,7 +123,8 @@ class MasterAnalyst:
 
     def assign_agents(self, response):
         """
-        Get responces from both SQL agents.
+        Ask SQL agent respective questions and Get responces from both SQL agents.
+        response: response from determine question method which are questions for agents.
         """
         self.DB_respoce = {'Sustain.db': None, 'Chris.db': None}
         self.DB_respoce['Sustain.db'] = self.sust_agent.run(response['Sustain.db Question'])
