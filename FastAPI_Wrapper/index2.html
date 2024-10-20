@@ -370,6 +370,8 @@ async function resetContext() {
             // Optionally, clear the user input field as well
             document.getElementById('userMessage').value = '';
 
+            ocument.getElementById('demoQuestions').style.display = 'flex';
+
         } else {
             console.error('Failed to reset chatbot context:', response.statusText);
         }
