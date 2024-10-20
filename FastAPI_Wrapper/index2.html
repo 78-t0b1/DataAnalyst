@@ -218,13 +218,7 @@
         <!-- Add the logoimage -->
         <div><img id="logo" src="static/assets/Bounce_Insights_Logo.svg" alt="Logo"></div>
         <div><h1>Analytic Chatbot</h1></div>
-            
-    </header>
-   
 
-<div id="chatContainer">
-    
-    <div id="chatOutput">
         <div class="demo-container" id="demoQuestions">
             <div class="demo-card" onclick="executeDemoQuestion('How does the amount consumers plan to spend on Christmas purchases compare to their willingness to pay more for products with sustainable practices?')">
                 How does the amount consumers plan to spend on Christmas purchases compare to their willingness to pay more for products with sustainable practices?
@@ -236,6 +230,14 @@
                 Top 3 favourite Brands to buy in a supermarket, grocery store or off licence at Christmas time?
             </div>
         </div>
+            
+    </header>
+   
+    
+<div id="chatContainer">
+    
+    <div id="chatOutput">
+        
     </div>
     <div id="loading">Processing...</div> <!-- Loading indicator -->
     <div id="inputContainer">
@@ -370,7 +372,7 @@ async function resetContext() {
             // Optionally, clear the user input field as well
             document.getElementById('userMessage').value = '';
 
-            ocument.getElementById('demoQuestions').style.display = 'flex';
+            document.getElementById('demoQuestions').style.display = 'flex';
 
         } else {
             console.error('Failed to reset chatbot context:', response.statusText);
@@ -446,6 +448,7 @@ async function resetContext() {
 
     window.onload = function() {
             resetContext();
+            document.getElementById('demoQuestions').style.display = 'flex';
         };
 
 </script>
