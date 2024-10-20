@@ -1,25 +1,30 @@
 # Survey Data Analyst
 
 
-`Survey Data Analyst` is a chatbot project that utilizes <u>GPT 4o</u>, <u>Langchain</u>, <u>SQLite</u>, and <u>SQLAlchemy</u> allows users to interact (perform <u>Q&A</u> and <u>RAG</u>) with Survey dataset files using natural language. 
+`Survey Data Analyst` is a chatbot project that utilizes **GPT-4o**, **Langchain**, **SQLite**, and **SQLAlchemy** to allow users to interact with survey dataset files through natural language. The chatbot is specifically designed to answer business questions about datasets, perform **Q&A**, and use **Retrieval-Augmented Generation (RAG)** for insights.
+
+Excel files are converted into SQLite3 databases, and an SQL agent is used to create queries for data retrieval. The retrieved data is then processed to generate actionable business insights.
+
+Live on : https://dataanalyst.onrender.com/
+
 
 
 
 ## Features:
 
-- Chat with CSV and XLSX data.
-- Quality AI-generated insights and comparisons between both datasets.
-- RAG with Tabular datasets.
-- Visualisation of insights and comparisons.
+- Interact with CSV and XLSX data through natural language.
+- AI-generated insights and comparisons between datasets.
+- RAG with tabular datasets.
+- Visualization of insights and comparisons.
 
 
 
 ## Main underlying techniques used in this chatbot:
-- LLM chains and agents.
-- Fast API as a web framework.
-- SQL agent from langchain community.
-- SQLite3 for database management.
-- Render for deployment.
+- **LLM chains and agents** for natural language processing and task execution.
+- **FastAPI** as the web framework.
+- **SQL agent** from the Langchain community for query generation.
+- **SQLite3** and **SQLAlchemy** for database management.
+- **Render** for deployment.
 
 ## Models used in this chatbot:
 - GPT-4o: [Website](https://platform.openai.com/docs/models)
@@ -49,8 +54,9 @@ DataAnalyst/
 |   └── DB_test.py
 |
 ├── Definations.py
-├── .gitignore
 ├── requirements.txt
+├── .gitignore
+├── .env
 └── README.md
 ```
 
