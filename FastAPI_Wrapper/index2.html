@@ -185,6 +185,31 @@
         td {
             background-color: #f3edf9;
         }
+
+        .demo-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .demo-card {
+            background-color: #ca5ccb;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px;
+            width: 200px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .demo-card:hover {
+            transform: scale(1.05);
+            background-color: #b04aa4;
+        }
     </style>
 </head>
 <body>
@@ -198,7 +223,20 @@
    
 
 <div id="chatContainer">
-    <div id="chatOutput"></div>
+    
+    <div id="chatOutput">
+        <div class="demo-container" id="demoQuestions">
+            <div class="demo-card" onclick="executeDemoQuestion('How does the amount consumers plan to spend on Christmas purchases compare to their willingness to pay more for products with sustainable practices?')">
+                How does the amount consumers plan to spend on Christmas purchases compare to their willingness to pay more for products with sustainable practices?
+            </div>
+            <div class="demo-card" onclick="executeDemoQuestion('How does the amount consumers plan to spend on Christmas purchases compare to their willingness to pay more for products with sustainable practices?')">
+                How does the amount consumers plan to spend on Christmas purchases compare to their willingness to pay more for products with sustainable practices?
+            </div>
+            <div class="demo-card" onclick="executeDemoQuestion('Top 3 favourite Brands to buy in a supermarket, grocery store or off licence at Christmas time?')">
+                Top 3 favourite Brands to buy in a supermarket, grocery store or off licence at Christmas time?
+            </div>
+        </div>
+    </div>
     <div id="loading">Processing...</div> <!-- Loading indicator -->
     <div id="inputContainer">
         <input type="text" id="userMessage" placeholder="Ask me question..." />
@@ -210,14 +248,21 @@
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 <script>
+    // Function to handle clicking the demo question card
+    function executeDemoQuestion(question) {
+            document.getElementById('userMessage').value = question;
+            sendMessage(); // Automatically send the message when a card is clicked
+            document.getElementById('demoQuestions').style.display = 'none';
+        }
+
     async function sendMessage() {
     const message = document.getElementById('userMessage').value;
 
     // Show the loading indicator
     document.getElementById('loading').style.display = 'block';
 
-        const response = await fetch('https://dataanalyst.onrender.com/chat/', {
-        // const response = await fetch('http://127.0.0.1:8000/chat/', {
+        // const response = await fetch('https://dataanalyst.onrender.com/chat/', {
+        const response = await fetch('http://127.0.0.1:8000/chat/', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ message })
@@ -225,11 +270,13 @@
         
         if (!response.ok) {
             console.error('Failed to send message:', response.statusText);
+            document.getElementById('loading').value = 'Failed to send message';
             return;
         }
 
     const data = await response.json();
     const markdownContent = marked.parse(data.response);
+    document.getElementById('demoQuestions').style.display = 'none';
 
     // Append user and bot messages
     document.getElementById('chatOutput').innerHTML += 
@@ -309,8 +356,8 @@
 }
 
 async function resetContext() {
-    const response = await fetch('https://dataanalyst.onrender.com/reset/', {
-    // const response = await fetch('http://127.0.0.1:8000/reset/', {
+    // const response = await fetch('https://dataanalyst.onrender.com/reset/', {
+    const response = await fetch('http://127.0.0.1:8000/reset/', {
             method: 'GET',
         });
         if (response.ok) {
