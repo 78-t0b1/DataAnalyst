@@ -104,6 +104,11 @@ fastapi dev FastAPI_Wrapper\server.py
   <img src="images/frontpage.png" alt="ChatBot UI">
 </div>
 
+- **Get Answer**: Triggers the model to generate a response. It may take around 2-3 minutes to provide the answer.
+- **Reset**: Clears the conversation history and resets the model’s memory.
+- **Query**: Displays the executed SQL query that was used to generate the response.
+- **Graphs**: Returns a category plot based on the data.
+
 ## Databases:
 **Dataset 1 (Sustainability Research Results)** - This dataset is an Excel file containing an NxN
 breakdown of the results to a survey commissioned by Bounce Insights asking consumers in the
