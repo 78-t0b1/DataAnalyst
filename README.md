@@ -78,7 +78,7 @@ OPENAI_API_KEY = XXXXXXXXXXXXXXXXXXXXXX
 HF_API_KEY = XXXXXXXXXXXXXXXXXXXX
 ```
 
-2. Activate vertual enviroment :
+2. Activate virtual enviroment :
 
 ```cmd
 cd <path_to_folder>
